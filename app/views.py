@@ -11,11 +11,15 @@ class ProductList(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
 
     def get(self, request, *args, **kwargs):
-        objs = Product.objects.all().values()
-        return Response(list(objs))
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
+        serializer.is_valid(raise_exception=True)
+        results = Product.objects.all()
+        output_serializer = self.get_serializer(results, many=True)
+        data = output_serializer.data[:]
+        return Response(data)
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -27,20 +31,43 @@ class ProductDetail(generics.RetrieveUpdateDestroyAPIView, mixins.CreateModelMix
     serializer_class = ProductSerializer
 
     def get(self, request, *args, **kwargs):
-        obj = Product.objects.get(pk=kwargs.get('pk', 1))
-        out = ProductSerializer(obj)
-        return Response(out.data)
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
+        serializer.is_valid(raise_exception=True)
+        results = Product.objects.all()
+        output_serializer = self.get_serializer(results, many=True)
+        data = output_serializer.data[:]
+        return Response(data)
 
 
-# class CartDetails(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Cart.objects.all()
-#     serializer_class = CartSerializer
-#
-#     def post(self, request, pk):
-#         prod = Product.objects.get(pk=pk)
-#
-#     def add(self, request, pk):
-#         import pdb;pdb.set_trace()
-#         prod = Product.objects.get(pk=pk)
-#         Cart(item=prod.pk).save()
-#         return Response({"success":True})
+class CartList(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
+        serializer.is_valid(raise_exception=True)
+        results = Cart.objects.all()
+        output_serializer = self.get_serializer(results, many=True)
+        data = output_serializer.data[:]
+        return Response(data)
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+
+class CartDetail(generics.RetrieveUpdateDestroyAPIView, mixins.CreateModelMixin):
+    queryset = Cart.objects.all()
+    serializer_class = ProductSerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
+        serializer.is_valid(raise_exception=True)
+        results = Cart.objects.all()
+        output_serializer = self.get_serializer(results, many=True)
+        data = output_serializer.data[:]
+        return Response(data)
+

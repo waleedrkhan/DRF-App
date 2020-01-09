@@ -5,7 +5,7 @@ class Product(models.Model):
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=20, blank=True, default='')
-    description = models.TextField()
+    description = models.TextField(default='')
     price = models.IntegerField(blank=True, default=10)
 
     class Meta:
@@ -18,7 +18,11 @@ class Product(models.Model):
 class Cart(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=255, blank=True, null=True)
-    items = models.ManyToManyField(Product)
+    name = models.CharField(max_length=20, blank=True, default='')
+    description = models.TextField(default='')
+    price = models.IntegerField(blank=True, default=10)
+    product_id = models.IntegerField(blank=False, default=0)
+    id = models.AutoField(primary_key=True)
 
 
 class Order(models.Model):
